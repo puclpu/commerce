@@ -1,6 +1,6 @@
 package com.sparta.commerce.user.repository;
 
-import com.sparta.commerce.redis.RedisRepository;
+import com.sparta.commerce.global.redis.RedisRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
