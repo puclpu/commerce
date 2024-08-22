@@ -25,6 +25,9 @@ public class User extends Timestamped {
   @Column(name = "user_id")
   private Long id;
 
+  @Column(name = "username", length = 30, nullable = false)
+  private String username;
+
   @Column(name = "name", length = 64, nullable = false)
   private String name;
 
@@ -48,8 +51,9 @@ public class User extends Timestamped {
   private Role role;
 
   @Builder
-  public User(String name, String email, String password, String phoneNumber, String zipCode,
+  public User(String username, String name, String email, String password, String phoneNumber, String zipCode,
       String address, Role role) {
+    this.username = username;
     this.name = name;
     this.email = email;
     this.password = password;
@@ -59,9 +63,10 @@ public class User extends Timestamped {
     this.role = role;
   }
 
-  public static User of(String email, String password, String name, String phoneNumber,
+  public static User of(String username, String email, String password, String name, String phoneNumber,
       String zipCode, String address, Role role) {
     return User.builder()
+        .username(username)
         .email(email)
         .password(password)
         .name(name)

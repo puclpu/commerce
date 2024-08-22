@@ -1,6 +1,6 @@
 package com.sparta.commerce.user.dto.response;
 
-import com.sparta.commerce.user.domain.User;
+import com.sparta.commerce.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,6 +9,7 @@ import lombok.Getter;
 public class SignUpResponseDto {
 
   private Long userId;
+  private String username;
   private String name;
   private String email;
   private String phoneNumber;
@@ -18,6 +19,7 @@ public class SignUpResponseDto {
   public static SignUpResponseDto from(User user) {
     return SignUpResponseDto.builder()
         .userId(user.getId())
+        .username(user.getUsername())
         .name(user.getName())
         .email(user.getEmail())
         .phoneNumber(user.getPhoneNumber())

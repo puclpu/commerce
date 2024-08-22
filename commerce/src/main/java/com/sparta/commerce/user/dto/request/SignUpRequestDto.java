@@ -10,6 +10,9 @@ import lombok.Getter;
 @Getter
 public class SignUpRequestDto {
 
+  @Size(min = 1, max = 30)
+  private String username;
+
   @Email(message = "이메일 형식이 아닙니다")
   @Size(min = 1, max = 30)
   private String email;
