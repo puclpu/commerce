@@ -1,4 +1,4 @@
-package com.sparta.commerce.redis;
+package com.sparta.commerce.global.redis;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
