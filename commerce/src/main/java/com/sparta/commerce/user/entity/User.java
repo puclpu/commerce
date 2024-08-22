@@ -1,5 +1,6 @@
-package com.sparta.commerce.user.domain;
+package com.sparta.commerce.user.entity;
 
+import com.sparta.commerce.global.entity.Timestamped;
 import com.sparta.commerce.user.type.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends Timestamped {
 
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
@@ -27,7 +28,7 @@ public class User {
   @Column(name = "name", length = 64, nullable = false)
   private String name;
 
-  @Column(name = "email", length = 192, nullable = false)
+  @Column(name = "email", length = 192, nullable = false, unique = true)
   private String email;
 
   @Column(name = "password", length = 60, nullable = false)
