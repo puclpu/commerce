@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductQueryDSLRepository {
 
-  Page<ProductSummaryDto> findProducts(Pageable pageable, String sortBy, boolean isAsc,
+  Page<ProductSummaryDto> findProducts(Pageable pageable,
       Category category);
 
 }

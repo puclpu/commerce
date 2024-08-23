@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,8 +20,10 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Page<ProductSummaryDto> getProducts(String sortBy, int page, int size, boolean isAsc,
       Category category) {
-    Pageable pageable = PageRequest.of(page, size);
-    Page<ProductSummaryDto> products = productRepository.findProducts(pageable, sortBy, isAsc, category);
+    Sort.Direction direction = isAsc ? Direction.ASC : Direction.DESC;
+    Sort sort = Sort.by(direction, sortBy);
+    Pageable pageable = PageRequest.of(page, size, sort);
+    Page<ProductSummaryDto> products = productRepository.findProducts(pageable, category);
     return products;
   }
 }
