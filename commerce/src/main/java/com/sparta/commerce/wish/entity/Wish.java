@@ -59,4 +59,10 @@ public class Wish {
         .build();
   }
 
+  public void updateQuantity(int quantityChange) {
+    this.quantity = this.quantity + quantityChange;
+    if (quantity < 1) { // 최소 수량 1
+      this.quantity = 1;
+    }
+  }
 }
