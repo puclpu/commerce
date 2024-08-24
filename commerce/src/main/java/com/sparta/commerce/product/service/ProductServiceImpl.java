@@ -46,6 +46,11 @@ public class ProductServiceImpl implements ProductService {
     return ProductInfoDto.of(product, productImageList, productOptionList);
   }
 
+  @Override
+  public List<ProductOptionInfoDto> getProductOptions(Long productId) {
+    return findProductOptionList(productId);
+  }
+
   private List<ProductOptionInfoDto> findProductOptionList(Long productId) {
     return productOptionRepository.findProductOptionList(productId);
   }
