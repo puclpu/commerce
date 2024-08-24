@@ -14,7 +14,7 @@ public class WishCreateResponseDto {
   private Long userId;
   private Long productId;
   private Long productOptionId;
-  private int count;
+  private int quantity;
 
   public static WishCreateResponseDto from(Wish wish) {
     Long productOptionId = wish.getProductOption() != null ? wish.getProductOption().getId() : null;
@@ -23,7 +23,7 @@ public class WishCreateResponseDto {
         .userId(wish.getUser().getId())
         .productId(wish.getProduct().getId())
         .productOptionId(productOptionId)
-        .count(wish.getCount())
+        .quantity(wish.getQuantity())
         .build();
   }
 

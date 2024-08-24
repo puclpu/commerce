@@ -39,23 +39,23 @@ public class Wish {
   @JoinColumn(name = "product_option_id")
   private ProductOption productOption;
 
-  @Column(name = "count", nullable = false)
-  private int count;
+  @Column(name = "quantity", nullable = false)
+  private int quantity;
 
   @Builder
-  public Wish(User user, Product product, ProductOption productOption, int count) {
+  public Wish(User user, Product product, ProductOption productOption, int quantity) {
     this.user = user;
     this.product = product;
     this.productOption = productOption;
-    this.count = count;
+    this.quantity = quantity;
   }
 
-  public static Wish of(User user, Product product, ProductOption productOption, int count) {
+  public static Wish of(User user, Product product, ProductOption productOption, int quantity) {
     return Wish.builder()
         .user(user)
         .product(product)
         .productOption(productOption)
-        .count(count)
+        .quantity(quantity)
         .build();
   }
 

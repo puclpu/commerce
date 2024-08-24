@@ -49,7 +49,7 @@ public class WishServiceImpl implements WishService{
     }
 
     // 위시 저장
-    Wish wish = Wish.of(user, product, productOption, requestDto.getCount());
+    Wish wish = Wish.of(user, product, productOption, requestDto.getQuantity());
     wishRepository.save(wish);
 
     return WishCreateResponseDto.from(wish);
