@@ -10,9 +10,13 @@ import com.sparta.commerce.user.entity.User;
 import com.sparta.commerce.user.repository.UserRepository;
 import com.sparta.commerce.wish.dto.request.WishCreateRequestDto;
 import com.sparta.commerce.wish.dto.response.WishCreateResponseDto;
+import com.sparta.commerce.wish.dto.response.WishDto;
 import com.sparta.commerce.wish.entity.Wish;
 import com.sparta.commerce.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -49,6 +53,17 @@ public class WishServiceImpl implements WishService{
     wishRepository.save(wish);
 
     return WishCreateResponseDto.from(wish);
+  }
+
+  @Override
+  public Page<WishDto> getWishList(Long userId, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<WishDto> wishList = findWishList(userId, pageable);
+    return wishList;
+  }
+
+  private Page<WishDto> findWishList(Long userId, Pageable pageable) {
+    return wishRepository.findWishList(userId, pageable);
   }
 
   private User findUser(Long userId) {
