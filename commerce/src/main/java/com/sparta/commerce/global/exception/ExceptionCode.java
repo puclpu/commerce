@@ -12,7 +12,8 @@ public enum ExceptionCode {
   PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
 
   // 409
-  MEMBER_EXISTS(HttpStatus.CONFLICT, "해당 이메일의 회원이 이미 존재합니다."),
+  USER_EXISTS(HttpStatus.CONFLICT, "해당 이메일의 회원이 이미 존재합니다."),
+  WISH_EXISTS(HttpStatus.CONFLICT, "이미 위시리스트에 등록된 상품입니다."),
 
   // 500
   CREATE_MAIL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "메일 생성에 실패했습니다."),
