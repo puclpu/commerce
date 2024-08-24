@@ -39,4 +39,6 @@ public class UserDetailsImpl implements UserDetails {
   public Role getRole() {
     return user.getRole();
   }
+
+  public Long getUserId() { return user.getId(); }
 }
