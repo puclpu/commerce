@@ -1,5 +1,6 @@
 package com.sparta.commerce.product.controller;
 
+import com.sparta.commerce.product.dto.ProductInfoDto;
 import com.sparta.commerce.product.dto.ProductSummaryDto;
 import com.sparta.commerce.product.service.ProductService;
 import com.sparta.commerce.product.type.Category;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,4 +32,9 @@ public class ProductController {
     return ResponseEntity.status(HttpStatus.OK).body(productSummaryDtoPage);
   }
 
+  @GetMapping("/{productId}")
+  public ResponseEntity<ProductInfoDto> getProduct(@PathVariable Long productId) {
+    ProductInfoDto responseDto = productService.getProduct(productId);
+    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+  }
 }
