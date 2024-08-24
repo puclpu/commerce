@@ -34,7 +34,7 @@ public class EmailServiceImpl implements EmailService {
     // 이미 존재하는 회원인지 판별
     boolean isExist = findUserByEmail(requestDto.getEmail());
     if (isExist) {
-      throw CustomException.from(ExceptionCode.MEMBER_EXISTS);
+      throw CustomException.from(ExceptionCode.USER_EXISTS);
     }
 
     // 인증 코드 생성

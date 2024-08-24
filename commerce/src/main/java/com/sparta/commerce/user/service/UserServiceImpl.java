@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService{
     // 이미 존재하는 회원인지 판별
     boolean isExist = findUserByUsername(requestDto.getUsername());
     if (isExist) {
-      throw CustomException.from(ExceptionCode.MEMBER_EXISTS);
+      throw CustomException.from(ExceptionCode.USER_EXISTS);
     }
 
     // 개인정보 암호화
