@@ -9,9 +9,11 @@ import com.sparta.commerce.product.repository.ProductRepository;
 import com.sparta.commerce.user.entity.User;
 import com.sparta.commerce.user.repository.UserRepository;
 import com.sparta.commerce.wish.dto.request.WishCreateRequestDto;
+import com.sparta.commerce.wish.dto.request.WishUpdateProductOptionRequestDto;
 import com.sparta.commerce.wish.dto.request.WishUpdateQuantityRequestDto;
 import com.sparta.commerce.wish.dto.response.WishCreateResponseDto;
 import com.sparta.commerce.wish.dto.response.WishDto;
+import com.sparta.commerce.wish.dto.response.WishUpdateProductOptionResponseDto;
 import com.sparta.commerce.wish.dto.response.WishUpdateQuantityResponseDto;
 import com.sparta.commerce.wish.entity.Wish;
 import com.sparta.commerce.wish.repository.WishRepository;
@@ -72,14 +74,37 @@ public class WishServiceImpl implements WishService{
     Wish wish = findWishById(wishId);
 
     // 위시 생성자와 사용자가 동일한지 판별
-    if(!userId.equals(wish.getUser().getId())) {
-      throw CustomException.from(ExceptionCode.USER_MISMATCH);
-    }
+    hasPermissionForWishUpdate(userId, wish.getUser().getId());
 
     // quantityChange 값 만큼 수량 변경
     wish.updateQuantity(requestDto.getQuantityChange());
 
     return WishUpdateQuantityResponseDto.from(wish);
+  }
+
+  @Override
+  @Transactional
+  public WishUpdateProductOptionResponseDto updateWishProductOption(Long wishId, Long userId,
+      WishUpdateProductOptionRequestDto requestDto) {
+    Wish wish = findWishById(wishId);
+
+    // 위시 생성자와 사용자가 동일한지 판별
+    hasPermissionForWishUpdate(userId, wish.getUser().getId());
+
+    // 존재하는 상품 옵션인지 판별
+    ProductOption productOption = findProductOption(requestDto.getProductOptionId(),
+        wish.getProduct().getId());
+
+    // 상품 옵션 변경
+    wish.updateProductOption(productOption);
+
+    return WishUpdateProductOptionResponseDto.from(wish);
+  }
+
+  private void hasPermissionForWishUpdate(Long userId, Long wishUserId) {
+    if(!userId.equals(wishUserId)) {
+      throw CustomException.from(ExceptionCode.USER_MISMATCH);
+    }
   }
 
   private Wish findWishById(Long wishId) {

@@ -65,4 +65,8 @@ public class Wish {
       this.quantity = 1;
     }
   }
+
+  public void updateProductOption(ProductOption productOption) {
+    this.productOption = productOption;
+  }
 }

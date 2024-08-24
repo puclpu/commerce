@@ -2,9 +2,11 @@ package com.sparta.commerce.wish.controller;
 
 import com.sparta.commerce.global.security.annotation.UserId;
 import com.sparta.commerce.wish.dto.request.WishCreateRequestDto;
+import com.sparta.commerce.wish.dto.request.WishUpdateProductOptionRequestDto;
 import com.sparta.commerce.wish.dto.request.WishUpdateQuantityRequestDto;
 import com.sparta.commerce.wish.dto.response.WishCreateResponseDto;
 import com.sparta.commerce.wish.dto.response.WishDto;
+import com.sparta.commerce.wish.dto.response.WishUpdateProductOptionResponseDto;
 import com.sparta.commerce.wish.dto.response.WishUpdateQuantityResponseDto;
 import com.sparta.commerce.wish.service.WishService;
 import jakarta.validation.Valid;
@@ -43,12 +45,21 @@ public class WishController {
     return ResponseEntity.status(HttpStatus.OK).body(wishList);
   }
 
-  @PutMapping("/{wishId}")
+  @PutMapping("/{wishId}/quantity")
   public ResponseEntity<WishUpdateQuantityResponseDto> updateWishQuantity(
       @RequestBody WishUpdateQuantityRequestDto requestDto,
       @UserId Long userId,
       @PathVariable Long wishId) {
     WishUpdateQuantityResponseDto responseDto = wishService.updateWishQuantity(wishId, userId, requestDto);
+    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+  }
+
+  @PutMapping("/{wishId}/option")
+  public ResponseEntity<WishUpdateProductOptionResponseDto> updateWishProductOption(
+      @RequestBody WishUpdateProductOptionRequestDto requestDto,
+      @UserId Long userId,
+      @PathVariable Long wishId) {
+    WishUpdateProductOptionResponseDto responseDto = wishService.updateWishProductOption(wishId, userId, requestDto);
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }
 
