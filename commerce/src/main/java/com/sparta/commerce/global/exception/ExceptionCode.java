@@ -8,10 +8,14 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ExceptionCode {
 
+  // 401
+  USER_MISMATCH(HttpStatus.UNAUTHORIZED, "등록자와 요청자가 일치하지 않습니다"),
+
   // 404
   PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
   PRODUCT_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
+  WISH_NOT_FOUND(HttpStatus.NOT_FOUND, "위시리스트에서 상품을 찾을 수 없습니다."),
 
   // 409
   USER_EXISTS(HttpStatus.CONFLICT, "해당 이메일의 회원이 이미 존재합니다."),

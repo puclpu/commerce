@@ -10,7 +10,7 @@ public class WishDto {
   private String name;
   private String thumbnailImage;
   private int price;
-  private int count;
+  private int quantity;
   private String productOptionName;
 
 }

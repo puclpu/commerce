@@ -12,6 +12,6 @@ public class WishCreateRequestDto {
   private Long productOptionId;
 
   @NotNull(message = "수량은 필수 입력 사항입니다.")
-  private int count;
+  private int quantity;
 
 }

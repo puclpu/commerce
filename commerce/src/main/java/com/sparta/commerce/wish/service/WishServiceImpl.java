@@ -9,8 +9,12 @@ import com.sparta.commerce.product.repository.ProductRepository;
 import com.sparta.commerce.user.entity.User;
 import com.sparta.commerce.user.repository.UserRepository;
 import com.sparta.commerce.wish.dto.request.WishCreateRequestDto;
+import com.sparta.commerce.wish.dto.request.WishUpdateProductOptionRequestDto;
+import com.sparta.commerce.wish.dto.request.WishUpdateQuantityRequestDto;
 import com.sparta.commerce.wish.dto.response.WishCreateResponseDto;
 import com.sparta.commerce.wish.dto.response.WishDto;
+import com.sparta.commerce.wish.dto.response.WishUpdateProductOptionResponseDto;
+import com.sparta.commerce.wish.dto.response.WishUpdateQuantityResponseDto;
 import com.sparta.commerce.wish.entity.Wish;
 import com.sparta.commerce.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +54,7 @@ public class WishServiceImpl implements WishService{
     }
 
     // 위시 저장
-    Wish wish = Wish.of(user, product, productOption, requestDto.getCount());
+    Wish wish = Wish.of(user, product, productOption, requestDto.getQuantity());
     wishRepository.save(wish);
 
     return WishCreateResponseDto.from(wish);
@@ -60,6 +65,51 @@ public class WishServiceImpl implements WishService{
     Pageable pageable = PageRequest.of(page, size);
     Page<WishDto> wishList = findWishList(userId, pageable);
     return wishList;
+  }
+
+  @Override
+  @Transactional
+  public WishUpdateQuantityResponseDto updateWishQuantity(Long wishId, Long userId,
+      WishUpdateQuantityRequestDto requestDto) {
+    Wish wish = findWishById(wishId);
+
+    // 위시 생성자와 사용자가 동일한지 판별
+    hasPermissionForWishUpdate(userId, wish.getUser().getId());
+
+    // quantityChange 값 만큼 수량 변경
+    wish.updateQuantity(requestDto.getQuantityChange());
+
+    return WishUpdateQuantityResponseDto.from(wish);
+  }
+
+  @Override
+  @Transactional
+  public WishUpdateProductOptionResponseDto updateWishProductOption(Long wishId, Long userId,
+      WishUpdateProductOptionRequestDto requestDto) {
+    Wish wish = findWishById(wishId);
+
+    // 위시 생성자와 사용자가 동일한지 판별
+    hasPermissionForWishUpdate(userId, wish.getUser().getId());
+
+    // 존재하는 상품 옵션인지 판별
+    ProductOption productOption = findProductOption(requestDto.getProductOptionId(),
+        wish.getProduct().getId());
+
+    // 상품 옵션 변경
+    wish.updateProductOption(productOption);
+
+    return WishUpdateProductOptionResponseDto.from(wish);
+  }
+
+  private void hasPermissionForWishUpdate(Long userId, Long wishUserId) {
+    if(!userId.equals(wishUserId)) {
+      throw CustomException.from(ExceptionCode.USER_MISMATCH);
+    }
+  }
+
+  private Wish findWishById(Long wishId) {
+    return wishRepository.findById(wishId)
+        .orElseThrow(() -> CustomException.from(ExceptionCode.WISH_NOT_FOUND));
   }
 
   private Page<WishDto> findWishList(Long userId, Pageable pageable) {

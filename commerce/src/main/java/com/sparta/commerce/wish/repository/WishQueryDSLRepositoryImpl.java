@@ -29,7 +29,7 @@ public class WishQueryDSLRepositoryImpl implements WishQueryDSLRepository {
             wish.product.name,
             wish.product.thumbnailImage,
             wish.product.price,
-            wish.count,
+            wish.quantity,
             wish.productOption.name.as("productOptionName")
             ))
         .from(wish)
