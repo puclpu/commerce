@@ -1,9 +1,11 @@
 package com.sparta.commerce.product.controller;
 
 import com.sparta.commerce.product.dto.ProductInfoDto;
+import com.sparta.commerce.product.dto.ProductOptionInfoDto;
 import com.sparta.commerce.product.dto.ProductSummaryDto;
 import com.sparta.commerce.product.service.ProductService;
 import com.sparta.commerce.product.type.Category;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -36,5 +38,11 @@ public class ProductController {
   public ResponseEntity<ProductInfoDto> getProduct(@PathVariable Long productId) {
     ProductInfoDto responseDto = productService.getProduct(productId);
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+  }
+
+  @GetMapping("/{productId}/option")
+  public ResponseEntity<List<ProductOptionInfoDto>> getProductOptions(@PathVariable Long productId) {
+    List<ProductOptionInfoDto> productOptionInfoDtoList = productService.getProductOptions(productId);
+    return ResponseEntity.status(HttpStatus.OK).body(productOptionInfoDtoList);
   }
 }
