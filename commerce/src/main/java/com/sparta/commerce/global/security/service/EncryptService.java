@@ -18,6 +18,13 @@ public class EncryptService {
     return byteArrayToString(encrypt);
   }
 
+  // 복호화
+  public String decrypt(String encryptString) {
+    byte[] decryptBytes = stringToByteArray(encryptString);
+    byte[] decrypt = aesBytesEncryptor.decrypt(decryptBytes);
+    return new String(decrypt, StandardCharsets.UTF_8);
+  }
+
   // byte > String
   public String byteArrayToString(byte[] bytes) {
     StringBuilder sb = new StringBuilder();
