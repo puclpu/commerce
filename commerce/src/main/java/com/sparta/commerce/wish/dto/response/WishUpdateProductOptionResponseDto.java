@@ -16,7 +16,7 @@ public class WishUpdateProductOptionResponseDto {
   public static WishUpdateProductOptionResponseDto from(Wish wish) {
     return WishUpdateProductOptionResponseDto.builder()
         .wishId(wish.getId())
-        .productOptionName(wish.getProductOption().getName())
+        .productOptionName(wish.getOptionItem().getProductOption().getName())
         .build();
   }
 }

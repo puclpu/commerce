@@ -6,6 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductOptionRepository extends JpaRepository<ProductOption, Long>, ProductOptionQueryDSLRepository {
 
-  Optional<ProductOption> findByIdAndProductId(Long productOptionId, Long productId);
-
 }

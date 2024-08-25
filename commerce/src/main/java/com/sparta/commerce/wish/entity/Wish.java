@@ -1,7 +1,6 @@
 package com.sparta.commerce.wish.entity;
 
-import com.sparta.commerce.product.entity.Product;
-import com.sparta.commerce.product.entity.ProductOption;
+import com.sparta.commerce.product.entity.OptionItem;
 import com.sparta.commerce.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,29 +31,23 @@ public class Wish {
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id")
-  private Product product;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_option_id")
-  private ProductOption productOption;
+  @JoinColumn(name = "option_item_id")
+  private OptionItem optionItem;
 
   @Column(name = "quantity", nullable = false)
   private int quantity;
 
   @Builder
-  public Wish(User user, Product product, ProductOption productOption, int quantity) {
+  public Wish(User user, OptionItem optionItem, int quantity) {
     this.user = user;
-    this.product = product;
-    this.productOption = productOption;
+    this.optionItem = optionItem;
     this.quantity = quantity;
   }
 
-  public static Wish of(User user, Product product, ProductOption productOption, int quantity) {
+  public static Wish of(User user, OptionItem optionItem, int quantity) {
     return Wish.builder()
         .user(user)
-        .product(product)
-        .productOption(productOption)
+        .optionItem(optionItem)
         .quantity(quantity)
         .build();
   }
@@ -66,7 +59,7 @@ public class Wish {
     }
   }
 
-  public void updateProductOption(ProductOption productOption) {
-    this.productOption = productOption;
+  public void updateOptionItem(OptionItem optionItem) {
+    this.optionItem = optionItem;
   }
 }

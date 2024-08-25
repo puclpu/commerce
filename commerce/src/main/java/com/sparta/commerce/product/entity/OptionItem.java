@@ -1,6 +1,5 @@
 package com.sparta.commerce.product.entity;
 
-import com.sparta.commerce.global.entity.Timestamped;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,17 +13,25 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
-@Table(name = "product_option")
+@Table(name = "option_item")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductOption extends Timestamped {
+public class OptionItem {
 
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "product_option_id")
+  @Column(name = "option_item_id")
   private Long id;
 
-  @Column(name = "name", length = 50, nullable = false)
-  private String name;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id")
+  private Product product;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_option_id")
+  private ProductOption productOption;
+
+  @Column(name = "stock", nullable = false)
+  private int stock;
 
 }

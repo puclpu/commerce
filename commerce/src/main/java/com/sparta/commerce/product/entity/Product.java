@@ -33,9 +33,6 @@ public class Product extends Timestamped {
   @Column(name = "description", length = 500, nullable = false)
   private String description;
 
-  @Column(name = "stock", nullable = false)
-  private int stock;
-
   @Column(name = "thumbnail_image", length = 512, nullable = false)
   private String thumbnailImage;
 
