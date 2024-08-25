@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "product_option")
+@Table(name = "product_options")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductOption extends Timestamped {
 

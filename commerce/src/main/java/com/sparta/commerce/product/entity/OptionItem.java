@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "option_item")
+@Table(name = "option_items")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OptionItem {

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "product_image")
+@Table(name = "product_images")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductImage extends Timestamped {
 
