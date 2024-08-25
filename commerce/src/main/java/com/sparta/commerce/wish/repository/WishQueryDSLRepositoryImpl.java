@@ -25,15 +25,16 @@ public class WishQueryDSLRepositoryImpl implements WishQueryDSLRepository {
     List<WishDto> fetch = jpaQueryFactory
         .select(Projections.fields(WishDto.class,
             wish.id.as("wishId"),
-            wish.product.id.as("productId"),
-            wish.product.name,
-            wish.product.thumbnailImage,
-            wish.product.price,
+            wish.optionItem.product.id.as("productId"),
+            wish.optionItem.product.name,
+            wish.optionItem.product.thumbnailImage,
+            wish.optionItem.product.price,
             wish.quantity,
-            wish.productOption.name.as("productOptionName")
+            wish.optionItem.productOption.name.as("productOptionName")
             ))
         .from(wish)
-        .leftJoin(wish.productOption)
+        .leftJoin(wish.optionItem)
+        .leftJoin(wish.optionItem.productOption)
         .where(wish.user.id.eq(userId))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())

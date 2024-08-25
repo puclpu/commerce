@@ -14,6 +14,7 @@ public enum ExceptionCode {
   // 404
   PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
   PRODUCT_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),
+  OPTION_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "옵션 상품을 찾을 수 없습니다."),
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
   WISH_NOT_FOUND(HttpStatus.NOT_FOUND, "위시리스트에서 상품을 찾을 수 없습니다."),
 

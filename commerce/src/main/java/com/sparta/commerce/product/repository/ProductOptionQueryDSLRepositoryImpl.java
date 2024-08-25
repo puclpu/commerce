@@ -1,5 +1,6 @@
 package com.sparta.commerce.product.repository;
 
+import static com.sparta.commerce.product.entity.QOptionItem.optionItem;
 import static com.sparta.commerce.product.entity.QProductOption.productOption;
 
 import com.querydsl.core.types.Projections;
@@ -20,8 +21,9 @@ public class ProductOptionQueryDSLRepositoryImpl implements ProductOptionQueryDS
     return jpaQueryFactory.select(Projections.fields(ProductOptionInfoDto.class,
                                                       productOption.id.as("productOptionId"),
                                                       productOption.name))
-        .from(productOption)
-        .where(productOption.product.id.eq(productId))
+        .from(optionItem)
+        .leftJoin(optionItem.productOption)
+        .where(optionItem.product.id.eq(productId))
         .fetch();
   }
 }

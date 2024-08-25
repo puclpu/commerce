@@ -2,10 +2,8 @@ package com.sparta.commerce.wish.service;
 
 import com.sparta.commerce.global.exception.CustomException;
 import com.sparta.commerce.global.exception.ExceptionCode;
-import com.sparta.commerce.product.entity.Product;
-import com.sparta.commerce.product.entity.ProductOption;
-import com.sparta.commerce.product.repository.ProductOptionRepository;
-import com.sparta.commerce.product.repository.ProductRepository;
+import com.sparta.commerce.product.entity.OptionItem;
+import com.sparta.commerce.product.repository.OptionItemRepository;
 import com.sparta.commerce.user.entity.User;
 import com.sparta.commerce.user.repository.UserRepository;
 import com.sparta.commerce.wish.dto.request.WishCreateRequestDto;
@@ -29,8 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WishServiceImpl implements WishService{
 
   private final WishRepository wishRepository;
-  private final ProductRepository productRepository;
-  private final ProductOptionRepository productOptionRepository;
+  private final OptionItemRepository optionItemRepository;
   private final UserRepository userRepository;
 
   @Override
@@ -38,23 +35,17 @@ public class WishServiceImpl implements WishService{
     // 존재하는 회원인지 판별
     User user = findUser(userId);
 
-    // 존재하는 상품인지 판별
-    Product product = findProduct(requestDto.getProductId());
+    // 존재하는 옵션 상품인지 판별
+    OptionItem optionItem = findOptionItem(requestDto.getProductId(), requestDto.getProductOptionId());
 
-    // 이미 위시리스트에 동일한 상품을 담았는지 판별
-    boolean isExist = findWishByUserAndProduct(user, product);
+    // 이미 위시리스트에 동일한 옵션 상품을 담았는지 판별
+    boolean isExist = isExistsByWishByUserAndOrderItem(user, optionItem);
     if (isExist) {
       throw CustomException.from(ExceptionCode.WISH_EXISTS);
     }
 
-    // 존재하는 상품 옵션인지 판별
-    ProductOption productOption = null;
-    if (requestDto.getProductOptionId() != null) {
-      productOption = findProductOption(requestDto.getProductOptionId(), requestDto.getProductId());
-    }
-
     // 위시 저장
-    Wish wish = Wish.of(user, product, productOption, requestDto.getQuantity());
+    Wish wish = Wish.of(user, optionItem, requestDto.getQuantity());
     wishRepository.save(wish);
 
     return WishCreateResponseDto.from(wish);
@@ -91,12 +82,11 @@ public class WishServiceImpl implements WishService{
     // 위시 생성자와 사용자가 동일한지 판별
     hasPermissionForWishUpdate(userId, wish.getUser().getId());
 
-    // 존재하는 상품 옵션인지 판별
-    ProductOption productOption = findProductOption(requestDto.getProductOptionId(),
-        wish.getProduct().getId());
+    // 존재하는 옵션 상품인지 판별
+    OptionItem optionItem = findOptionItem(requestDto.getProductId(), requestDto.getProductOptionId());
 
     // 상품 옵션 변경
-    wish.updateProductOption(productOption);
+    wish.updateOptionItem(optionItem);
 
     return WishUpdateProductOptionResponseDto.from(wish);
   }
@@ -121,18 +111,13 @@ public class WishServiceImpl implements WishService{
         .orElseThrow(() -> CustomException.from(ExceptionCode.USER_NOT_FOUND));
   }
 
-  private ProductOption findProductOption(Long productOptionId, Long productId) {
-    return productOptionRepository.findByIdAndProductId(productOptionId, productId)
-        .orElseThrow(() -> CustomException.from(ExceptionCode.PRODUCT_OPTION_NOT_FOUND));
+  private OptionItem findOptionItem(Long productId, Long productOptionId) {
+    return optionItemRepository.findByProductIdAndProductOptionId(productId, productOptionId)
+        .orElseThrow(() -> CustomException.from(ExceptionCode.OPTION_ITEM_NOT_FOUND));
   }
 
-  private Product findProduct(Long productId) {
-    return productRepository.findById(productId)
-        .orElseThrow(() -> CustomException.from(ExceptionCode.PRODUCT_NOT_FOUND));
-  }
-
-  private boolean findWishByUserAndProduct(User user, Product product) {
-    return wishRepository.existsByUserAndProduct(user, product);
+  private boolean isExistsByWishByUserAndOrderItem(User user, OptionItem optionItem) {
+    return wishRepository.existsByUserAndOptionItem(user, optionItem);
   }
 
 }
