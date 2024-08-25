@@ -20,8 +20,10 @@ public class OrderCreateResponseDto {
   private OrderStatus status;
   private LocalDateTime createdDateTime;
   private List<OrderItemCreateResponseDto> orderItems;
+  private DeliveryCreateResponseDto delivery;
 
-  public static OrderCreateResponseDto of(Order order, List<OrderItem> orderItems) {
+  public static OrderCreateResponseDto of(Order order, List<OrderItem> orderItems,
+      DeliveryCreateResponseDto deliveryCreateResponseDto) {
     List<OrderItemCreateResponseDto> orderItemCreateResponseDtoList = new ArrayList<>();
     for (OrderItem orderItem : orderItems) {
       OrderItemCreateResponseDto orderItemCreateResponseDto = OrderItemCreateResponseDto.from(orderItem);
@@ -34,6 +36,7 @@ public class OrderCreateResponseDto {
         .status(order.getStatus())
         .createdDateTime(order.getCreatedDateTime())
         .orderItems(orderItemCreateResponseDtoList)
+        .delivery(deliveryCreateResponseDto)
         .build();
   }
 }

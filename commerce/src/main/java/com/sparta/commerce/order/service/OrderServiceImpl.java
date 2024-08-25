@@ -2,11 +2,15 @@ package com.sparta.commerce.order.service;
 
 import com.sparta.commerce.global.exception.CustomException;
 import com.sparta.commerce.global.exception.ExceptionCode;
+import com.sparta.commerce.global.security.service.EncryptService;
 import com.sparta.commerce.order.dto.request.OrderCreateRequestDto;
 import com.sparta.commerce.order.dto.request.OrderItemCreateRequestDto;
+import com.sparta.commerce.order.dto.response.DeliveryCreateResponseDto;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
+import com.sparta.commerce.order.entity.Delivery;
 import com.sparta.commerce.order.entity.Order;
 import com.sparta.commerce.order.entity.OrderItem;
+import com.sparta.commerce.order.repository.DeliveryRepository;
 import com.sparta.commerce.order.repository.OrderItemRepository;
 import com.sparta.commerce.order.repository.OrderRepository;
 import com.sparta.commerce.product.entity.OptionItem;
@@ -27,6 +31,8 @@ public class OrderServiceImpl implements OrderService{
   private final OrderItemRepository orderItemRepository;
   private final UserRepository userRepository;
   private final OptionItemRepository optionItemRepository;
+  private final DeliveryRepository deliveryRepository;
+  private final EncryptService encryptService;
 
   @Override
   @Transactional
@@ -54,11 +60,36 @@ public class OrderServiceImpl implements OrderService{
       orderItems.add(orderItem);
     }
 
+    // 배송 생성
+    Delivery delivery = encodeDelivery(order, requestDto);
+
     // 주문 저장
     orderRepository.save(order);
     orderItemRepository.saveAll(orderItems);
+    deliveryRepository.save(delivery);
 
-    return OrderCreateResponseDto.of(order, orderItems);
+    // 배송 복호화
+    DeliveryCreateResponseDto deliveryCreateResponseDto = decodeDelivery(delivery);
+
+    return OrderCreateResponseDto.of(order, orderItems, deliveryCreateResponseDto);
+  }
+
+  private DeliveryCreateResponseDto decodeDelivery(Delivery delivery) {
+    String name = encryptService.decrypt(delivery.getName());
+    String phoneNumber = encryptService.decrypt(delivery.getPhoneNumber());
+    String zipCode = encryptService.decrypt(delivery.getZipCode());
+    String address = encryptService.decrypt(delivery.getAddress());
+    String message = encryptService.decrypt(delivery.getMessage());
+    return DeliveryCreateResponseDto.of(name, phoneNumber, zipCode, address, message);
+  }
+
+  private Delivery encodeDelivery(Order order, OrderCreateRequestDto requestDto) {
+    String name = encryptService.encrypt(requestDto.getName());
+    String phoneNumber = encryptService.encrypt(requestDto.getPhoneNumber());
+    String zipCode = encryptService.encrypt(requestDto.getZipCode());
+    String address = encryptService.encrypt(requestDto.getAddress());
+    String message = encryptService.encrypt(requestDto.getMessage());
+    return Delivery.of(order, name, phoneNumber, zipCode, address, message);
   }
 
   private void deductOptionItemStock(OptionItem optionItem, int quantity) {
