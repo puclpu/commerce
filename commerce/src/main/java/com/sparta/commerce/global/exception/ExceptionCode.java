@@ -21,6 +21,7 @@ public enum ExceptionCode {
   // 409
   USER_EXISTS(HttpStatus.CONFLICT, "해당 이메일의 회원이 이미 존재합니다."),
   WISH_EXISTS(HttpStatus.CONFLICT, "이미 위시리스트에 등록된 상품입니다."),
+  OUT_OF_STOCK(HttpStatus.CONFLICT, "상품 재고가 부족합니다."),
 
   // 500
   CREATE_MAIL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "메일 생성에 실패했습니다."),
