@@ -1,7 +1,6 @@
-package com.sparta.commerce.wish.entity;
+package com.sparta.commerce.order.entity;
 
 import com.sparta.commerce.product.entity.OptionItem;
-import com.sparta.commerce.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,19 +15,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
-@Table(name = "wishes")
+@Table(name = "order_item")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Wish {
+public class OrderItem {
 
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "wish_id")
+  @Column(name = "order_item_id")
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
+  @JoinColumn(name = "order_id")
+  private Order order;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "option_item_id")
@@ -38,28 +37,17 @@ public class Wish {
   private int quantity;
 
   @Builder
-  public Wish(User user, OptionItem optionItem, int quantity) {
-    this.user = user;
+  public OrderItem(Order order, OptionItem optionItem, int quantity) {
+    this.order = order;
     this.optionItem = optionItem;
     this.quantity = quantity;
   }
 
-  public static Wish of(User user, OptionItem optionItem, int quantity) {
-    return Wish.builder()
-        .user(user)
+  public static OrderItem of(Order order, OptionItem optionItem, int quantity) {
+    return OrderItem.builder()
+        .order(order)
         .optionItem(optionItem)
         .quantity(quantity)
         .build();
-  }
-
-  public void updateQuantity(int quantityChange) {
-    this.quantity = this.quantity + quantityChange;
-    if (quantity < 1) { // 최소 수량 1
-      this.quantity = 1;
-    }
-  }
-
-  public void updateOptionItem(OptionItem optionItem) {
-    this.optionItem = optionItem;
   }
 }
