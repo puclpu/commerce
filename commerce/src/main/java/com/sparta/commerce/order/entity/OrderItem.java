@@ -36,18 +36,23 @@ public class OrderItem {
   @Column(name = "quantity", nullable = false)
   private int quantity;
 
+  @Column(name = "price", nullable = false)
+  private double price;
+
   @Builder
-  public OrderItem(Order order, OptionItem optionItem, int quantity) {
+  public OrderItem(Order order, OptionItem optionItem, int quantity, double price) {
     this.order = order;
     this.optionItem = optionItem;
     this.quantity = quantity;
+    this.price = price;
   }
 
-  public static OrderItem of(Order order, OptionItem optionItem, int quantity) {
+  public static OrderItem of(Order order, OptionItem optionItem, int quantity, double price) {
     return OrderItem.builder()
         .order(order)
         .optionItem(optionItem)
         .quantity(quantity)
+        .price(price)
         .build();
   }
 }

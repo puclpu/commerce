@@ -7,6 +7,7 @@ import com.sparta.commerce.order.dto.request.OrderCreateRequestDto;
 import com.sparta.commerce.order.dto.request.OrderItemCreateRequestDto;
 import com.sparta.commerce.order.dto.response.DeliveryCreateResponseDto;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
+import com.sparta.commerce.order.dto.response.OrderSummaryDto;
 import com.sparta.commerce.order.entity.Delivery;
 import com.sparta.commerce.order.entity.Order;
 import com.sparta.commerce.order.entity.OrderItem;
@@ -20,6 +21,9 @@ import com.sparta.commerce.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +60,9 @@ public class OrderServiceImpl implements OrderService{
       int quantity = orderItemCreateRequestDto.getQuantity();
       deductOptionItemStock(optionItem, quantity);
 
-      OrderItem orderItem = OrderItem.of(order, optionItem, quantity);
+      double price = calculatePrice(optionItem);
+
+      OrderItem orderItem = OrderItem.of(order, optionItem, quantity, price);
       orderItems.add(orderItem);
     }
 
@@ -72,6 +78,16 @@ public class OrderServiceImpl implements OrderService{
     DeliveryCreateResponseDto deliveryCreateResponseDto = decodeDelivery(delivery);
 
     return OrderCreateResponseDto.of(order, orderItems, deliveryCreateResponseDto);
+  }
+
+  private double calculatePrice(OptionItem optionItem) {
+    return optionItem.getProduct().getPrice();
+  }
+
+  @Override
+  public Page<OrderSummaryDto> getOrders(Long userId, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return orderRepository.getOrders(userId, pageable);
   }
 
   private DeliveryCreateResponseDto decodeDelivery(Delivery delivery) {
