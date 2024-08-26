@@ -9,6 +9,7 @@ import com.sparta.commerce.order.dto.response.DecryptedDeliveryInfo;
 import com.sparta.commerce.order.dto.response.OrderCancelResponseDto;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
 import com.sparta.commerce.order.dto.response.OrderInfoDto;
+import com.sparta.commerce.order.dto.response.OrderReturnResponseDto;
 import com.sparta.commerce.order.dto.response.OrderSummaryDto;
 import com.sparta.commerce.order.entity.Delivery;
 import com.sparta.commerce.order.entity.Order;
@@ -21,6 +22,8 @@ import com.sparta.commerce.product.entity.OptionItem;
 import com.sparta.commerce.product.repository.OptionItemRepository;
 import com.sparta.commerce.user.entity.User;
 import com.sparta.commerce.user.repository.UserRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,8 @@ public class OrderServiceImpl implements OrderService{
   private final OptionItemRepository optionItemRepository;
   private final DeliveryRepository deliveryRepository;
   private final EncryptService encryptService;
+
+  private final static int RETURN_PERIOD = 1;
 
   @Override
   @Transactional
@@ -138,6 +143,35 @@ public class OrderServiceImpl implements OrderService{
     }
 
     return OrderCancelResponseDto.from(order);
+  }
+
+  @Override
+  @Transactional
+  public OrderReturnResponseDto returnProduct(Long orderId, Long userId, LocalDateTime now) {
+    Order order = findOrder(orderId);
+
+    // 반품 요청이 가능한 사용자인지 판별
+    Long orderUserId = order.getUser().getId();
+    hasPermissionForOrder(userId, orderUserId);
+
+    // 주문 상태가 배송 완료인지 판별
+    OrderStatus orderStatus = order.getStatus();
+    if (!orderStatus.equals(OrderStatus.DELIVERED)) {
+      throw CustomException.from(ExceptionCode.RETURN_NOT_ALLOWED);
+    }
+
+    // 반품 요청 가능 기간인지 판별
+    Delivery delivery = deliveryRepository.findByOrderId(orderId);
+    LocalDate completedDate = delivery.getCompletedDateTime().toLocalDate();
+    LocalDate today = now.toLocalDate();
+    if (today.isAfter(completedDate.plusDays(RETURN_PERIOD + 1))) {
+      throw CustomException.from(ExceptionCode.RETURN_PERIOD_EXPIRED);
+    }
+
+    // 반품 신청
+    order.requestReturn(now);
+
+    return OrderReturnResponseDto.from(order);
   }
 
   private void hasPermissionForOrder(Long userId, Long orderUserId) {
