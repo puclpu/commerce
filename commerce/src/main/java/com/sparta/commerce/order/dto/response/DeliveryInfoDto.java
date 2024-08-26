@@ -7,16 +7,18 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class DeliveryCreateResponseDto {
+public class DeliveryInfoDto {
 
+  private Long deliveryId;
   private String name;
   private String phoneNumber;
   private String zipCode;
   private String address;
   private String message;
 
-  public static DeliveryCreateResponseDto from(DecryptedDeliveryInfo decryptedDelivery) {
-    return DeliveryCreateResponseDto.builder()
+  public static DeliveryInfoDto from(DecryptedDeliveryInfo decryptedDelivery) {
+    return DeliveryInfoDto.builder()
+        .deliveryId(decryptedDelivery.getDeliveryId())
         .name(decryptedDelivery.getName())
         .phoneNumber(decryptedDelivery.getPhoneNumber())
         .zipCode(decryptedDelivery.getZipCode())

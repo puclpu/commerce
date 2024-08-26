@@ -5,8 +5,9 @@ import com.sparta.commerce.global.exception.ExceptionCode;
 import com.sparta.commerce.global.security.service.EncryptService;
 import com.sparta.commerce.order.dto.request.OrderCreateRequestDto;
 import com.sparta.commerce.order.dto.request.OrderItemCreateRequestDto;
-import com.sparta.commerce.order.dto.response.DeliveryCreateResponseDto;
+import com.sparta.commerce.order.dto.response.DecryptedDeliveryInfo;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
+import com.sparta.commerce.order.dto.response.OrderInfoDto;
 import com.sparta.commerce.order.dto.response.OrderSummaryDto;
 import com.sparta.commerce.order.entity.Delivery;
 import com.sparta.commerce.order.entity.Order;
@@ -75,9 +76,9 @@ public class OrderServiceImpl implements OrderService{
     deliveryRepository.save(delivery);
 
     // 배송 복호화
-    DeliveryCreateResponseDto deliveryCreateResponseDto = decodeDelivery(delivery);
+    DecryptedDeliveryInfo decryptedDelivery = decodeDelivery(delivery);
 
-    return OrderCreateResponseDto.of(order, orderItems, deliveryCreateResponseDto);
+    return OrderCreateResponseDto.of(order, orderItems, decryptedDelivery);
   }
 
   private double calculatePrice(OptionItem optionItem) {
@@ -90,13 +91,52 @@ public class OrderServiceImpl implements OrderService{
     return orderRepository.getOrders(userId, pageable);
   }
 
-  private DeliveryCreateResponseDto decodeDelivery(Delivery delivery) {
+  @Override
+  public OrderInfoDto getOrder(Long orderId, Long userId) {
+    // 주문 조회
+    Order order = findOrder(orderId);
+
+    // 주문 상품 조회
+    List<OrderItem> orderItems = findOrderItemList(orderId);
+
+    // 배송 정보 조회
+    DecryptedDeliveryInfo decryptedDelivery = findDelivery(orderId);
+
+    // 조회 요청자가 주문자인지 판별
+    Long orderUserId = order.getUser().getId();
+    hasPermissionForGetOrder(userId, orderUserId);
+    String userName = encryptService.decrypt(order.getUser().getName());
+
+    return OrderInfoDto.of(order, userName, orderItems, decryptedDelivery);
+  }
+
+  private void hasPermissionForGetOrder(Long userId, Long orderUserId) {
+    if(!userId.equals(orderUserId)) {
+      throw CustomException.from(ExceptionCode.USER_MISMATCH);
+    }
+  }
+
+  private DecryptedDeliveryInfo findDelivery(Long orderId) {
+    Delivery delivery = deliveryRepository.findByOrderId(orderId);
+    return decodeDelivery(delivery);
+  }
+
+  private Order findOrder(Long orderId) {
+    return orderRepository.findById(orderId)
+        .orElseThrow(() -> CustomException.from(ExceptionCode.ORDER_NOT_FOUND));
+  }
+
+  private List<OrderItem> findOrderItemList(Long orderId) {
+    return orderItemRepository.findAllByOrderId(orderId);
+  }
+
+  private DecryptedDeliveryInfo decodeDelivery(Delivery delivery) {
     String name = encryptService.decrypt(delivery.getName());
     String phoneNumber = encryptService.decrypt(delivery.getPhoneNumber());
     String zipCode = encryptService.decrypt(delivery.getZipCode());
     String address = encryptService.decrypt(delivery.getAddress());
     String message = encryptService.decrypt(delivery.getMessage());
-    return DeliveryCreateResponseDto.of(name, phoneNumber, zipCode, address, message);
+    return DecryptedDeliveryInfo.of(delivery.getId(), name, phoneNumber, zipCode, address, message);
   }
 
   private Delivery encodeDelivery(Order order, OrderCreateRequestDto requestDto) {
