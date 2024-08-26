@@ -20,4 +20,8 @@ public interface OrderService {
   OrderCancelResponseDto cancelOrder(Long orderId, Long userId);
 
   OrderReturnResponseDto returnProduct(Long orderId, Long userId, LocalDateTime now);
+
+  void updateOrderStatusDelivery(LocalDateTime now);
+
+  void updateOrderStatusReturn(LocalDateTime now);
 }
