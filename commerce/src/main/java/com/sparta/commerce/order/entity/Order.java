@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +38,9 @@ public class Order extends Timestamped {
   @Enumerated(EnumType.STRING)
   private OrderStatus status;
 
+  @Column(name = "return_request_date_time")
+  private LocalDateTime returnRequestDateTime;
+
   @Builder
   public Order(User user, OrderStatus status) {
     this.user = user;
@@ -52,5 +56,10 @@ public class Order extends Timestamped {
 
   public void cancelOrder() {
     this.status = OrderStatus.ORDER_CANCELED;
+  }
+
+  public void requestReturn(LocalDateTime now) {
+    this.status = OrderStatus.RETURN_REQUESTED;
+    this.returnRequestDateTime = now;
   }
 }
