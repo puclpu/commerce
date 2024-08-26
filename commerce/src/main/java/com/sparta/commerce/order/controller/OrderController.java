@@ -2,6 +2,7 @@ package com.sparta.commerce.order.controller;
 
 import com.sparta.commerce.global.security.annotation.UserId;
 import com.sparta.commerce.order.dto.request.OrderCreateRequestDto;
+import com.sparta.commerce.order.dto.response.OrderCancelResponseDto;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
 import com.sparta.commerce.order.dto.response.OrderInfoDto;
 import com.sparta.commerce.order.dto.response.OrderSummaryDto;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +45,12 @@ public class OrderController {
   @GetMapping("/{orderId}")
   public ResponseEntity<OrderInfoDto> getOrder(@PathVariable Long orderId, @UserId Long userId) {
     OrderInfoDto responseDto = orderService.getOrder(orderId, userId);
+    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+  }
+
+  @PutMapping("/{orderId}/cancel")
+  public ResponseEntity<OrderCancelResponseDto> cancelOrder(@PathVariable Long orderId, @UserId Long userId) {
+    OrderCancelResponseDto responseDto = orderService.cancelOrder(orderId, userId);
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }
 

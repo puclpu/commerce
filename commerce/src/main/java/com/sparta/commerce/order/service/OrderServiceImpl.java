@@ -6,6 +6,7 @@ import com.sparta.commerce.global.security.service.EncryptService;
 import com.sparta.commerce.order.dto.request.OrderCreateRequestDto;
 import com.sparta.commerce.order.dto.request.OrderItemCreateRequestDto;
 import com.sparta.commerce.order.dto.response.DecryptedDeliveryInfo;
+import com.sparta.commerce.order.dto.response.OrderCancelResponseDto;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
 import com.sparta.commerce.order.dto.response.OrderInfoDto;
 import com.sparta.commerce.order.dto.response.OrderSummaryDto;
@@ -15,6 +16,7 @@ import com.sparta.commerce.order.entity.OrderItem;
 import com.sparta.commerce.order.repository.DeliveryRepository;
 import com.sparta.commerce.order.repository.OrderItemRepository;
 import com.sparta.commerce.order.repository.OrderRepository;
+import com.sparta.commerce.order.type.OrderStatus;
 import com.sparta.commerce.product.entity.OptionItem;
 import com.sparta.commerce.product.repository.OptionItemRepository;
 import com.sparta.commerce.user.entity.User;
@@ -104,13 +106,41 @@ public class OrderServiceImpl implements OrderService{
 
     // 조회 요청자가 주문자인지 판별
     Long orderUserId = order.getUser().getId();
-    hasPermissionForGetOrder(userId, orderUserId);
+    hasPermissionForOrder(userId, orderUserId);
     String userName = encryptService.decrypt(order.getUser().getName());
 
     return OrderInfoDto.of(order, userName, orderItems, decryptedDelivery);
   }
 
-  private void hasPermissionForGetOrder(Long userId, Long orderUserId) {
+  @Override
+  @Transactional
+  public OrderCancelResponseDto cancelOrder(Long orderId, Long userId) {
+    Order order = findOrder(orderId);
+
+    // 취소 요청이 가능한 사용자인지 판별
+    Long orderUserId = order.getUser().getId();
+    hasPermissionForOrder(userId, orderUserId);
+
+    // 주문 상태가 배송 중이 되기 전인지 판별
+    OrderStatus orderStatus = order.getStatus();
+    if (!(orderStatus.equals(OrderStatus.PREPARING_PRODUCT) || orderStatus.equals(OrderStatus.PREPARING_DELIVERING))) {
+      throw CustomException.from(ExceptionCode.ALREADY_SHIPPED);
+    }
+
+    // 주문 취소
+    order.cancelOrder();
+
+    // 상품 재고 복구
+    List<OrderItem> orderItems = findOrderItemList(orderId);
+    for (OrderItem orderItem : orderItems) {
+      OptionItem optionItem = orderItem.getOptionItem();
+      optionItem.addStock(orderItem.getQuantity());
+    }
+
+    return OrderCancelResponseDto.from(order);
+  }
+
+  private void hasPermissionForOrder(Long userId, Long orderUserId) {
     if(!userId.equals(orderUserId)) {
       throw CustomException.from(ExceptionCode.USER_MISMATCH);
     }
