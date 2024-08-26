@@ -5,8 +5,10 @@ import com.sparta.commerce.order.dto.request.OrderCreateRequestDto;
 import com.sparta.commerce.order.dto.response.OrderCancelResponseDto;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
 import com.sparta.commerce.order.dto.response.OrderInfoDto;
+import com.sparta.commerce.order.dto.response.OrderReturnResponseDto;
 import com.sparta.commerce.order.dto.response.OrderSummaryDto;
 import com.sparta.commerce.order.service.OrderService;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -51,6 +53,13 @@ public class OrderController {
   @PutMapping("/{orderId}/cancel")
   public ResponseEntity<OrderCancelResponseDto> cancelOrder(@PathVariable Long orderId, @UserId Long userId) {
     OrderCancelResponseDto responseDto = orderService.cancelOrder(orderId, userId);
+    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+  }
+
+  @PutMapping("/{orderId}/return")
+  public ResponseEntity<OrderReturnResponseDto> returnProduct(@PathVariable Long orderId, @UserId Long userId) {
+    LocalDateTime now = LocalDateTime.now();
+    OrderReturnResponseDto responseDto = orderService.returnProduct(orderId, userId, now);
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }
 
