@@ -62,4 +62,8 @@ public class Order extends Timestamped {
     this.status = OrderStatus.RETURN_REQUESTED;
     this.returnRequestDateTime = now;
   }
+
+  public void completeReturn() {
+    this.status = OrderStatus.RETURN_COMPLETED;
+  }
 }

@@ -174,6 +174,27 @@ public class OrderServiceImpl implements OrderService{
     return OrderReturnResponseDto.from(order);
   }
 
+  @Override
+  public void updateOrderStatusDelivery(LocalDateTime now) {
+    orderRepository.updateOrderStatusDelivery(now);
+  }
+
+  @Override
+  @Transactional
+  public void updateOrderStatusReturn(LocalDateTime now) {
+    List<OrderItem> returnedOrderItems = orderItemRepository.findReturnedOrderItems(now);
+    for (OrderItem orderItem : returnedOrderItems) {
+      // 반품 신청한 상품 재고 복구
+      OptionItem optionItem = orderItem.getOptionItem();
+      optionItem.addStock(orderItem.getQuantity());
+
+      // 반품 완료 상태 전환
+      Order order = orderItem.getOrder();
+      order.completeReturn();
+    }
+
+  }
+
   private void hasPermissionForOrder(Long userId, Long orderUserId) {
     if(!userId.equals(orderUserId)) {
       throw CustomException.from(ExceptionCode.USER_MISMATCH);

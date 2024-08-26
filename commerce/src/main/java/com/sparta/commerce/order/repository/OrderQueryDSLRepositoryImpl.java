@@ -10,12 +10,15 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.commerce.order.dto.response.OrderSummaryDto;
 import com.sparta.commerce.order.entity.Order;
+import com.sparta.commerce.order.type.OrderStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,4 +49,24 @@ public class OrderQueryDSLRepositoryImpl implements OrderQueryDSLRepository{
 
     return PageableExecutionUtils.getPage(fetch, pageable, count::fetchCount);
   }
+
+  @Override
+  @Transactional
+  public void updateOrderStatusDelivery(LocalDateTime now) {
+    LocalDateTime yesterday = now.minusDays(1);
+    LocalDateTime twoDaysAgo = now.minusDays(2);
+    LocalDateTime threeDaysAgo = now.minusDays(3);
+
+    jpaQueryFactory.update(order)
+        .where(order.createdDateTime.between(twoDaysAgo, now).and(order.status.eq(OrderStatus.PREPARING_DELIVERING)))
+        .set(order.status, OrderStatus.DELIVERING)
+        .execute();
+
+    jpaQueryFactory.update(order)
+        .where(order.createdDateTime.between(threeDaysAgo, yesterday).and(order.status.eq(OrderStatus.DELIVERING)))
+        .set(order.status, OrderStatus.DELIVERED)
+        .execute();
+
+  }
+
 }
