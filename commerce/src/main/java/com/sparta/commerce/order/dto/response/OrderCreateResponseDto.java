@@ -23,12 +23,14 @@ public class OrderCreateResponseDto {
   private DeliveryCreateResponseDto delivery;
 
   public static OrderCreateResponseDto of(Order order, List<OrderItem> orderItems,
-      DeliveryCreateResponseDto deliveryCreateResponseDto) {
+      DecryptedDeliveryInfo decryptedDelivery) {
     List<OrderItemCreateResponseDto> orderItemCreateResponseDtoList = new ArrayList<>();
     for (OrderItem orderItem : orderItems) {
       OrderItemCreateResponseDto orderItemCreateResponseDto = OrderItemCreateResponseDto.from(orderItem);
       orderItemCreateResponseDtoList.add(orderItemCreateResponseDto);
     }
+
+    DeliveryCreateResponseDto delivery = DeliveryCreateResponseDto.from(decryptedDelivery);
 
     return OrderCreateResponseDto.builder()
         .orderId(order.getId())
@@ -36,7 +38,7 @@ public class OrderCreateResponseDto {
         .status(order.getStatus())
         .createdDateTime(order.getCreatedDateTime())
         .orderItems(orderItemCreateResponseDtoList)
-        .delivery(deliveryCreateResponseDto)
+        .delivery(delivery)
         .build();
   }
 }
