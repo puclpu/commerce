@@ -1,6 +1,7 @@
 package com.sparta.commerce.order.service;
 
 import com.sparta.commerce.order.dto.request.OrderCreateRequestDto;
+import com.sparta.commerce.order.dto.response.OrderCancelResponseDto;
 import com.sparta.commerce.order.dto.response.OrderCreateResponseDto;
 import com.sparta.commerce.order.dto.response.OrderInfoDto;
 import com.sparta.commerce.order.dto.response.OrderSummaryDto;
@@ -13,4 +14,7 @@ public interface OrderService {
   Page<OrderSummaryDto> getOrders(Long userId, int page, int size);
 
   OrderInfoDto getOrder(Long orderId, Long userId);
+
+  OrderCancelResponseDto cancelOrder(Long orderId, Long userId);
+
 }

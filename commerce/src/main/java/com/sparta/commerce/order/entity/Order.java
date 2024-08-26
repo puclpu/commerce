@@ -49,4 +49,8 @@ public class Order extends Timestamped {
         .status(OrderStatus.PREPARING_PRODUCT)
         .build();
   }
+
+  public void cancelOrder() {
+    this.status = OrderStatus.ORDER_CANCELED;
+  }
 }
